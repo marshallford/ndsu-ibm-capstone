@@ -2,4 +2,10 @@
 TensorFlow Object Storage Data Plugin
 
 ## Workstation/Dev setup
-* Install flake8: `pip install flake8`
+
+### Installation
+* Python 3?
+* flake8: `pip install flake8`
+
+### Usage
+* Lint all: `make lint`
