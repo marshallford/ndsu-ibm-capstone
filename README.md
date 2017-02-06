@@ -9,3 +9,6 @@ TensorFlow Object Storage Data Plugin
 
 ### Usage
 * Lint all: `make lint`
+
+### Testing
+* run tests: `python -m nose`
