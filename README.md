@@ -5,7 +5,7 @@ TensorFlow Object Storage Data Plugin
 
 ### Installation
 * Python 3?
-* Dev Dependencies: `python setup.py develop`
+* Dev Dependencies: `pip install .`
 * Dependencies: `pip install -r requirements.txt`
 
 ### Usage
