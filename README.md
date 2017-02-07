@@ -20,4 +20,4 @@ secretAccessKey: TAbnyKdWbTtsyhDm
 ```
 
 ### Testing
-* run tests: `python -m nose`
+* run tests: `make test`
