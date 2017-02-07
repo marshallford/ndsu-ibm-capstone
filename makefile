@@ -1,2 +1,2 @@
 lint:
-	flake8 **/*.py
+	find . -name '*.py' -exec flake8 {} +
