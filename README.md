@@ -21,6 +21,8 @@ secretAccessKey: TAbnyKdWbTtsyhDm
 
 #### Env vars
 
+to add: `export FOO="str"`
+
 * `NDSU_IBM_ENDPOINT`
 * `NDSU_IBM_ACCESSKEYID`
 * `NDSU_IBM_SECRETACCESSKEY`
