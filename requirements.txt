@@ -1,3 +1,5 @@
 flake8
 nose
+boto3
+pyyaml
 
