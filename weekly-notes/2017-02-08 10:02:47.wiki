@@ -1,0 +1,27 @@
+= what we go over =
+how to make object storage work better with deep learning packages
+    - what are developers doing today?
+        - naitive access to object store, 
+    - either s3 or swift can grab chunks of data naitively. might be called multipart
+        - s3 streaming.
+        - might be a code example of this
+
+
+== User stories ==
+- Tensorflow dev
+    - optimally useing the network
+    - how easy it is to get your files in s3 and share them (publish for others to grab)
+    - work with s3 or swift?
+    
+= next steps =
+- project specifications
+
+- custom data readers 
+
+- tf.textlinereader
+    - will just make our own. import it and use it simularly
+    - pip install -e or something 
+        - will import the project
+        - pylogmat for an example
+        
+matt will get back to use later today or tommarow with more info on textlinereader
