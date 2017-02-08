@@ -1,4 +1,5 @@
 import unittest
+import s3
 
 
 class TestStringMethods(unittest.TestCase):
@@ -16,6 +17,16 @@ class TestStringMethods(unittest.TestCase):
         # check that s.split fails when the separator is not a string
         with self.assertRaises(TypeError):
             s.split(2)
+
+
+class TestS3Connection(unittest.TestCase):
+
+    def test_buckets(self):
+        conn = s3.getConnection()
+        names = []
+        for bucket in conn.buckets.all():
+            names.append(bucket.name)
+        self.assertTrue(len(names) > 0)
 
 
 if __name__ == '__main__':

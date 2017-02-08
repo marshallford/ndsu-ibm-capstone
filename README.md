@@ -19,5 +19,11 @@ accessKeyId: kpXpAspCbzZwNvxF
 secretAccessKey: TAbnyKdWbTtsyhDm
 ```
 
+#### Env vars
+
+* `NDSU_IBM_ENDPOINT`
+* `NDSU_IBM_ACCESSKEYID`
+* `NDSU_IBM_SECRETACCESSKEY`
+
 ### Testing
 * run tests: `make test`

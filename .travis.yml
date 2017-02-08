@@ -10,3 +10,4 @@ script: make test
 
 notifications:
   slack: ibmcapstone:jNa6gRvxjCSuuagomzZ94EQX
+  email: false
