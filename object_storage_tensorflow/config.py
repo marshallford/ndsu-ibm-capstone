@@ -1,9 +1,10 @@
 import yaml
 import os
+from .utils import ROOT_DIR
 
 
 def get():
-    filename = 'config.yaml'
+    filename = os.path.join(ROOT_DIR, '../config.yaml')
     config = {}
     if os.path.exists(filename):
         with open(filename, 'r') as f:

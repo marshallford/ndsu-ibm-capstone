@@ -1,5 +1,5 @@
 import boto3
-import config
+from . import config
 
 
 def getConnection():

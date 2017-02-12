@@ -1,5 +1,5 @@
 import unittest
-import s3
+import object_storage_tensorflow as obj_tf
 
 
 class TestStringMethods(unittest.TestCase):
@@ -22,7 +22,7 @@ class TestStringMethods(unittest.TestCase):
 class TestS3Connection(unittest.TestCase):
 
     def test_buckets(self):
-        conn = s3.getConnection()
+        conn = obj_tf.s3.getConnection()
         names = []
         for bucket in conn.buckets.all():
             names.append(bucket.name)
