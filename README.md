@@ -1,6 +1,8 @@
 # ndsu-ibm-capstone
 TensorFlow Object Storage Data Plugin
 
+[Project Specification Document](https://docs.google.com/document/d/1mr2ggZHrlI0iniVcTVem0Ymqx7VJABBGUVTVuMMH41I/edit?usp=sharing)
+
 ## Workstation/Dev setup
 
 ### Installation
