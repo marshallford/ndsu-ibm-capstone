@@ -1,0 +1,23 @@
+[[https://github.com/yahoo/TensorFlowOnSpark|Tensor flow on spark]] -might want to look at this
+
+For now, a downloader is good enough. but the long term goal is to have it use the data remotely
+
+We should use pull requests, or just what we planned. 
+
+we should use the travis "patches"
+
+look at s3 chunked read and remote read
+
+Start at mulitple positions of the file, read all in parallel
+
+The big goal is probably to make it so we dont need to download 2TB of data all the time, just use what you need.
+
+We should use chunks of it, distributed across all the nodes
+
+
+= action items =
+Tensorflow reading stuff,
+
+boto reading stuff,
+
+
