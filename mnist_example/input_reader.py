@@ -28,7 +28,7 @@ from six.moves import xrange  # pylint: disable=redefined-builtin
 from tensorflow.contrib.learn.python.learn.datasets import base
 from tensorflow.python.framework import dtypes
 
-from . import object_storage_tensorflow as obj_tf
+import object_storage_tensorflow as obj_tf
 
 SOURCE_URL = 'http://yann.lecun.com/exdb/mnist/'
 
