@@ -10,3 +10,9 @@ def getConnection():
         aws_access_key_id=info['accessKeyId'],
         aws_secret_access_key=info['secretAccessKey']
     )
+
+def download(bucket,key):
+	conn = getConnection()
+	#TODO: return errors
+	conn.Bucket(bucket).download_file(key, '/tmp/' + key)
+	return '/tmp/' + key
