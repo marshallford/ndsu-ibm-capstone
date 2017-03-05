@@ -214,12 +214,14 @@ def read_data_sets(train_dir,
     test = fake()
     return base.Datasets(train=train, validation=validation, test=test)
 
+
+  print('Starting downloading...')
   bucket = 'my-test-bucket'
   TRAIN_IMAGES = obj_tf.s3.download(bucket,'train-images-idx3-ubyte.gz')
   TRAIN_LABELS = obj_tf.s3.download(bucket,'train-labels-idx1-ubyte.gz')
   TEST_IMAGES = obj_tf.s3.download(bucket,'t10k-images-idx3-ubyte.gz')
   TEST_LABELS = obj_tf.s3.download(bucket,'t10k-labels-idx1-ubyte.gz')
-
+  print('Done downloading...')
 
   local_file = TRAIN_IMAGES
   with open(local_file, 'rb') as f:

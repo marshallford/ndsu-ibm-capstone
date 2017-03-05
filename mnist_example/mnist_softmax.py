@@ -29,6 +29,9 @@ import input_data
 
 import tensorflow as tf
 
+import numpy as np
+import scipy.ndimage
+
 FLAGS = None
 
 
@@ -68,9 +71,15 @@ def main(_):
   # Test trained model
   correct_prediction = tf.equal(tf.argmax(y, 1), tf.argmax(y_, 1))
   accuracy = tf.reduce_mean(tf.cast(correct_prediction, tf.float32))
-  print(sess.run(accuracy, feed_dict={x: mnist.test.images,
-                                      y_: mnist.test.labels}))
+  result = sess.run(accuracy, feed_dict={x: mnist.test.images, y_: mnist.test.labels})
+  print("accuracy: " + str(result))
 
+  # Test own handwriting
+  image = np.vectorize(lambda x: 255 - x)(np.ndarray.flatten(scipy.ndimage.imread("test.png", flatten=True)))
+  prediction = tf.argmax(tf.nn.softmax(y), 1)
+  result = sess.run(prediction, feed_dict={ x: [image]})
+  print("test image is: " + str(result[0]))
+  
 if __name__ == '__main__':
   parser = argparse.ArgumentParser()
   parser.add_argument('--data_dir', type=str, default='/tmp/tensorflow/mnist/input_data',
