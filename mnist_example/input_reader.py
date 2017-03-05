@@ -215,7 +215,7 @@ def read_data_sets(train_dir,
     return base.Datasets(train=train, validation=validation, test=test)
 
 
-  print('Starting downloading...')
+  print('Starting download...')
   bucket = 'my-test-bucket'
   TRAIN_IMAGES = obj_tf.s3.download(bucket,'train-images-idx3-ubyte.gz')
   TRAIN_LABELS = obj_tf.s3.download(bucket,'train-labels-idx1-ubyte.gz')

@@ -24,9 +24,11 @@ from __future__ import print_function
 
 import argparse
 import sys
+import os
 
 import input_data
 
+os.environ['TF_CPP_MIN_LOG_LEVEL'] = '3'
 import tensorflow as tf
 
 import numpy as np
