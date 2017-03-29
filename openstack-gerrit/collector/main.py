@@ -5,7 +5,7 @@ from functools import reduce
 
 
 def queryChanges(start):
-    url = "https://review.openstack.org/changes/?q=status:closed&o=CURRENT_REVISION&o=CURRENT_COMMIT&o=CURRENT_FILES&o=DETAILED_ACCOUNTS&start={}"
+    url = "https://review.openstack.org/changes/?q=status:closed&o=CURRENT_REVISION&o=CURRENT_COMMIT&o=CURRENT_FILES&o=DETAILED_ACCOUNTS&start={}" # NOQA
     return requests.get(url.format(str(start)))
 
 
