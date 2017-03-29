@@ -3,12 +3,18 @@ import json
 from pathlib import Path
 import os
 from functools import reduce
+import re
 
 
 def jenkinFunc(change):
     # access to messages
-    # change["messages"]
-    return "foo"
+    successes = 0
+    failures = 0
+    for message in filter(lambda x: x.get("author", {}).get("username") == "jenkins", change["messages"]):
+        messageText = message["message"]
+        successes += len(re.findall(r'success', messageText, re.IGNORECASE))
+        failures += len(re.findall(r'failure', messageText, re.IGNORECASE))
+    return str(successes) + "-" + str(failures)
 
 
 attrs = {
