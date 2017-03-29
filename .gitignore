@@ -93,3 +93,6 @@ config.yaml
 
 # OSX
 .DS_Store
+
+# CSV
+*.csv
