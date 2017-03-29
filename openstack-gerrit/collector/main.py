@@ -10,7 +10,7 @@ def jenkinFunc(change):
     # access to messages
     successes = 0
     failures = 0
-    for message in filter(lambda x: x.get("author", {}).get("username") == "jenkins", change["messages"]):
+    for message in filter(lambda x: x.get("author", {}).get("username") == "jenkins", change["messages"]): # NOQA
         messageText = message["message"]
         successes += len(re.findall(r'success', messageText, re.IGNORECASE))
         failures += len(re.findall(r'failure', messageText, re.IGNORECASE))
