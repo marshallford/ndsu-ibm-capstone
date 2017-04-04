@@ -3,18 +3,6 @@ import json
 from pathlib import Path
 import os
 from functools import reduce
-import re
-
-
-def jenkinFunc(change):
-    # access to messages
-    successes = 0
-    failures = 0
-    for message in filter(lambda x: x.get("author", {}).get("username") == "jenkins", change["messages"]): # NOQA
-        messageText = message["message"]
-        successes += len(re.findall(r'success', messageText, re.IGNORECASE))
-        failures += len(re.findall(r'failure', messageText, re.IGNORECASE))
-    return str(successes) + "-" + str(failures)
 
 
 attrs = {
@@ -23,16 +11,18 @@ attrs = {
     'insertions': 'insertions',
     'deletions': 'deletions',
     'accountID': 'owner._account_id',
-    'jenkins': jenkinFunc
+    'verified': 'labels.Verified.value'
 }
 filename = 'changes.csv'
 numberToIncrement = 500
-stopAtByteSize = 10000  # 1000000  # 1MB
+stopAtByteSize = 100000  # 1000000  # 1MB
 
 
 def queryChanges(start):
-    url = "https://review.openstack.org/changes/?q=status:closed&o=CURRENT_REVISION&o=CURRENT_COMMIT&o=CURRENT_FILES&o=DETAILED_ACCOUNTS&o=MESSAGES&start={}" # NOQA
-    return requests.get(url.format(str(start)))
+    # status:open label:Verified reviewer:"Jenkins <jenkins@openstack.org>"
+    query = 'status%3Aopen%20label%3AVerified%20reviewer%3A%22Jenkins%20%3Cjenkins%40openstack.org%3E%22' # NOQA
+    url = "https://review.openstack.org/changes/?q={}&o=CURRENT_REVISION&o=CURRENT_COMMIT&o=CURRENT_FILES&o=DETAILED_ACCOUNTS&o=LABELS&start={}" # NOQA
+    return requests.get(url.format(query, str(start)))
 
 
 def textToJson(text):
@@ -61,7 +51,7 @@ def writeChanges(changes):
                 else:
                     line += str(reduce(dict.get, attr.split("."), change))
                 line += ","
-            f.write(line + "\n")
+            f.write(line[:-1] + "\n")
 
 
 n = 0
