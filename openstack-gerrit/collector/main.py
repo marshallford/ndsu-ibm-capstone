@@ -16,7 +16,7 @@ attrs = {
 }
 filename = 'changes.csv'
 numberToIncrement = 500
-stopAtByteSize = 100000  # 1000000  # 1MB
+stopAtByteSize = 1000000  # 1000000  # 1MB
 
 
 def queryChanges(start):
@@ -73,6 +73,9 @@ def writeChanges(changes):
 n = 0
 while sizeOfCSV() < stopAtByteSize:
     j = textToJson(queryChanges(n).text)
+    if (len(j) < 1):
+        print("Out of changes...")
+        break
     writeChanges(j)
     n += numberToIncrement
 deduplicateCSV()
