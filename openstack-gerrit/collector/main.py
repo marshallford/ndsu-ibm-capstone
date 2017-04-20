@@ -3,6 +3,7 @@ import json
 from pathlib import Path
 import os
 from functools import reduce
+import csv
 
 
 attrs = {
@@ -15,7 +16,7 @@ attrs = {
 }
 filename = 'changes.csv'
 numberToIncrement = 500
-stopAtByteSize = 100000  # 1000000  # 1MB
+stopAtByteSize = 1000000  # 1000000  # 1MB
 
 
 def queryChanges(start):
@@ -36,13 +37,28 @@ def sizeOfCSV():
         return 0
 
 
+def deduplicateCSV():
+    newCSV = list()
+    f = open(filename, "r")
+    reader = csv.reader(f, delimiter=',')
+    seenKeys = set()
+    for row in reader:
+        if row[0] in seenKeys:
+            continue
+        seenKeys.add(row[0])
+        newCSV.append(','.join(row))
+    f = open(filename, "w+")
+    for i in newCSV:
+        f.write(i + '\n')
+
+
 def writeChanges(changes):
     headers = False
     if not Path(filename).is_file():
         headers = True
     with open(filename, 'a+') as f:
         if headers:
-            f.write(', '.join(list(attrs.keys())) + '\n')
+            f.write(','.join(list(attrs.keys())) + '\n')
         for change in j:
             line = ""
             for _, attr in attrs.items():
@@ -57,5 +73,9 @@ def writeChanges(changes):
 n = 0
 while sizeOfCSV() < stopAtByteSize:
     j = textToJson(queryChanges(n).text)
+    if (len(j) < 1):
+        print("Out of changes...")
+        break
     writeChanges(j)
     n += numberToIncrement
+deduplicateCSV()
