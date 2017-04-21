@@ -1,7 +1,3 @@
-<<<<<<< HEAD
-=======
-# flake8: noqa
->>>>>>> 099b2997474e5483fc0038ec7d801a89b97669ae
 # Copyright 2016 The TensorFlow Authors. All Rights Reserved.
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -30,52 +26,15 @@ from six.moves import urllib
 import pandas as pd
 import tensorflow as tf
 
-
-<<<<<<< HEAD
 COLUMNS = ["deletions", "insertions", "changeid", "project", "verified", "accountid"]
 LABEL_COLUMN = "label"
 CATEGORICAL_COLUMNS = ["changeid", "project", "verified", "accountid"]
 CONTINUOUS_COLUMNS = ["deletions", "insertions"]
-=======
-COLUMNS = ["age", "workclass", "fnlwgt", "education", "education_num",
-           "marital_status", "occupation", "relationship", "race", "gender",
-           "capital_gain", "capital_loss", "hours_per_week", "native_country",
-           "income_bracket"]
-LABEL_COLUMN = "label"
-CATEGORICAL_COLUMNS = ["workclass", "education", "marital_status", "occupation",
-                       "relationship", "race", "gender", "native_country"]
-CONTINUOUS_COLUMNS = ["age", "education_num", "capital_gain", "capital_loss",
-                      "hours_per_week"]
-
-
-def maybe_download(train_data, test_data):
-  """Maybe downloads training data and returns train and test file names."""
-  if train_data:
-    train_file_name = train_data
-  else:
-    train_file = tempfile.NamedTemporaryFile(delete=False)
-    urllib.request.urlretrieve("http://mlr.cs.umass.edu/ml/machine-learning-databases/adult/adult.data", train_file.name)  # pylint: disable=line-too-long
-    train_file_name = train_file.name
-    train_file.close()
-    print("Training data is downloaded to %s" % train_file_name)
-
-  if test_data:
-    test_file_name = test_data
-  else:
-    test_file = tempfile.NamedTemporaryFile(delete=False)
-    urllib.request.urlretrieve("http://mlr.cs.umass.edu/ml/machine-learning-databases/adult/adult.test", test_file.name)  # pylint: disable=line-too-long
-    test_file_name = test_file.name
-    test_file.close()
-    print("Test data is downloaded to %s" % test_file_name)
-
-  return train_file_name, test_file_name
->>>>>>> 099b2997474e5483fc0038ec7d801a89b97669ae
 
 
 def build_estimator(model_dir, model_type):
   """Build an estimator."""
   # Sparse base columns.
-<<<<<<< HEAD
   verified = tf.contrib.layers.sparse_column_with_keys(column_name="verified",
                                                      keys=["-1", "1"])
   project = tf.contrib.layers.sparse_column_with_hash_bucket(
@@ -98,58 +57,6 @@ def build_estimator(model_dir, model_type):
       tf.contrib.layers.embedding_column(project, dimension=8),
       deletions,
       insertions,
-=======
-  gender = tf.contrib.layers.sparse_column_with_keys(column_name="gender",
-                                                     keys=["female", "male"])
-  education = tf.contrib.layers.sparse_column_with_hash_bucket(
-      "education", hash_bucket_size=1000)
-  relationship = tf.contrib.layers.sparse_column_with_hash_bucket(
-      "relationship", hash_bucket_size=100)
-  workclass = tf.contrib.layers.sparse_column_with_hash_bucket(
-      "workclass", hash_bucket_size=100)
-  occupation = tf.contrib.layers.sparse_column_with_hash_bucket(
-      "occupation", hash_bucket_size=1000)
-  native_country = tf.contrib.layers.sparse_column_with_hash_bucket(
-      "native_country", hash_bucket_size=1000)
-
-  # Continuous base columns.
-  age = tf.contrib.layers.real_valued_column("age")
-  education_num = tf.contrib.layers.real_valued_column("education_num")
-  capital_gain = tf.contrib.layers.real_valued_column("capital_gain")
-  capital_loss = tf.contrib.layers.real_valued_column("capital_loss")
-  hours_per_week = tf.contrib.layers.real_valued_column("hours_per_week")
-
-  # Transformations.
-  age_buckets = tf.contrib.layers.bucketized_column(age,
-                                                    boundaries=[
-                                                        18, 25, 30, 35, 40, 45,
-                                                        50, 55, 60, 65
-                                                    ])
-
-  # Wide columns and deep columns.
-  wide_columns = [gender, native_country, education, occupation, workclass,
-                  relationship, age_buckets,
-                  tf.contrib.layers.crossed_column([education, occupation],
-                                                   hash_bucket_size=int(1e4)),
-                  tf.contrib.layers.crossed_column(
-                      [age_buckets, education, occupation],
-                      hash_bucket_size=int(1e6)),
-                  tf.contrib.layers.crossed_column([native_country, occupation],
-                                                   hash_bucket_size=int(1e4))]
-  deep_columns = [
-      tf.contrib.layers.embedding_column(workclass, dimension=8),
-      tf.contrib.layers.embedding_column(education, dimension=8),
-      tf.contrib.layers.embedding_column(gender, dimension=8),
-      tf.contrib.layers.embedding_column(relationship, dimension=8),
-      tf.contrib.layers.embedding_column(native_country,
-                                         dimension=8),
-      tf.contrib.layers.embedding_column(occupation, dimension=8),
-      age,
-      education_num,
-      capital_gain,
-      capital_loss,
-      hours_per_week,
->>>>>>> 099b2997474e5483fc0038ec7d801a89b97669ae
   ]
 
   if model_type == "wide":
@@ -164,17 +71,14 @@ def build_estimator(model_dir, model_type):
         model_dir=model_dir,
         linear_feature_columns=wide_columns,
         dnn_feature_columns=deep_columns,
-<<<<<<< HEAD
         dnn_hidden_units=[100, 50])
-=======
         dnn_hidden_units=[100, 50],
         fix_global_step_increment_bug=True)
->>>>>>> 099b2997474e5483fc0038ec7d801a89b97669ae
   return m
 
 
 def input_fn(df):
-  """Input builder function."""
+ """Input builder function."""
   # Creates a dictionary mapping from each continuous feature column name (k) to
   # the values of that column stored in a constant Tensor.
   continuous_cols = {k: tf.constant(df[k].values) for k in CONTINUOUS_COLUMNS}
@@ -197,24 +101,14 @@ def input_fn(df):
 
 def train_and_eval(model_dir, model_type, train_steps, train_data, test_data):
   """Train and evaluate the model."""
-<<<<<<< HEAD
   # train_file_name, test_file_name = "changes.csv"
   df_train = pd.read_csv(
       tf.gfile.Open("changes.csv"),
-=======
-  train_file_name, test_file_name = maybe_download(train_data, test_data)
-  df_train = pd.read_csv(
-      tf.gfile.Open(train_file_name),
->>>>>>> 099b2997474e5483fc0038ec7d801a89b97669ae
       names=COLUMNS,
       skipinitialspace=True,
       engine="python")
   df_test = pd.read_csv(
-<<<<<<< HEAD
       tf.gfile.Open("changes.csv"),
-=======
-      tf.gfile.Open(test_file_name),
->>>>>>> 099b2997474e5483fc0038ec7d801a89b97669ae
       names=COLUMNS,
       skipinitialspace=True,
       skiprows=1,
@@ -225,15 +119,9 @@ def train_and_eval(model_dir, model_type, train_steps, train_data, test_data):
   df_test = df_test.dropna(how='any', axis=0)
 
   df_train[LABEL_COLUMN] = (
-<<<<<<< HEAD
-      df_train["verified"].apply(lambda x: ">0" in x)).astype(int)
-  df_test[LABEL_COLUMN] = (
-      df_test["verified"].apply(lambda x: ">0" in x)).astype(int)
-=======
       df_train["income_bracket"].apply(lambda x: ">50K" in x)).astype(int)
   df_test[LABEL_COLUMN] = (
       df_test["income_bracket"].apply(lambda x: ">50K" in x)).astype(int)
->>>>>>> 099b2997474e5483fc0038ec7d801a89b97669ae
 
   model_dir = tempfile.mkdtemp() if not model_dir else model_dir
   print("model directory = %s" % model_dir)
