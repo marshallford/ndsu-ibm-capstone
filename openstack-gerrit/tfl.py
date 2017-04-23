@@ -33,9 +33,24 @@ def preprocess(changes, columns_to_delete):
     for i in changes:
         i[0] = int(project_dict[i[0]])
 
+        print(i[0])
+    with open("projects.dict", 'w') as f:
+        for key, value in project_dict.items():
+            f.write('%s:%s\n' % (key, value))
+    # This is how you read in projects.dict
+
+    # data = dict()
+    # with open(myfile) as raw_data:
+    #    for item if raw_data:
+    #        if ':' in item:
+    #            key,value = item.split(':', 1)
+    #            data[key]=value
+    #        else:
+    #            pass # deal with bad lines of text here
+
     # for i in range(len(changes)):
-        # Converting 'sex' field to float (id is 1 after removing labels column) # noqa
-        # changes[i][1] = 1. if changes[i][1] == 'female' else 0.
+    #   Converting 'sex' field to float (id is 1 after removing labels column) # noqa
+    #   changes[i][1] = 1. if changes[i][1] == 'female' else 0.
     return np.array(changes, dtype=np.float32)
 
 
