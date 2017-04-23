@@ -88,12 +88,13 @@ def writeChanges(changes):
             f.write(line[:-1] + "\n")
 
 
-n = 0
-while sizeOfCSV() < stopAtByteSize:
-    j = textToJson(queryChanges(n).text)
-    if (len(j) < 1):
-        print("Out of changes...")
-        break
-    writeChanges(j)
-    n += numberToIncrement
-deduplicateCSV()
+if __name__ == "__main__":
+    n = 0
+    while sizeOfCSV() < stopAtByteSize:
+        j = textToJson(queryChanges(n).text)
+        if (len(j) < 1):
+            print("Out of changes...")
+            break
+        writeChanges(j)
+        n += numberToIncrement
+    deduplicateCSV()
