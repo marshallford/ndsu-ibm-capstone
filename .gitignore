@@ -99,3 +99,6 @@ config.yaml
 
 # Saved model
 openstack-gerrit/saved_model
+
+# Saved Python dict
+*.dict

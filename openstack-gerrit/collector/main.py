@@ -7,6 +7,7 @@ import csv
 from dateutil.parser import parse
 
 
+# given a change dict, returns 0 or 1 for Jenkins pass/fail
 def verified(change):
     value = change.get('labels', {}).get('Verified', {}).get('value')
     if value is None:
@@ -17,6 +18,7 @@ def verified(change):
         return 1
 
 
+# given a change dict, return delta in seconds between created and updated time
 def created_updated_delta(change):
     created = parse(change['created'])
     updated = parse(change['updated'])
@@ -35,15 +37,25 @@ attrs = list([
 filename = 'changes.csv'
 numberToIncrement = 500
 stopAtByteSize = 1000000  # 1000000  # 1MB
+baseUrl = 'https://review.openstack.org'
+changeUrlParams = 'o=CURRENT_REVISION&o=CURRENT_COMMIT&o=CURRENT_FILES&o=DETAILED_ACCOUNTS&o=LABELS' # NOQA
 
 
+# return Response object of single change
+def queryChange(id):
+    url = "{}/changes/{}?{}"
+    return requests.get(url.format(baseUrl, id, changeUrlParams))
+
+
+# return Response object of some changes
 def queryChanges(start):
     # status:open label:Verified reviewer:"Jenkins <jenkins@openstack.org>"
     query = 'status%3Aopen%20label%3AVerified%20reviewer%3A%22Jenkins%20%3Cjenkins%40openstack.org%3E%22' # NOQA
-    url = "https://review.openstack.org/changes/?q={}&o=CURRENT_REVISION&o=CURRENT_COMMIT&o=CURRENT_FILES&o=DETAILED_ACCOUNTS&o=LABELS&start={}" # NOQA
-    return requests.get(url.format(query, str(start)))
+    url = "{}/changes/?q={}&{}&start={}" # NOQA
+    return requests.get(url.format(baseUrl, query, changeUrlParams, str(start))) # NOQA
 
 
+# given text, return json
 def textToJson(text):
     return json.loads(text[4:])
 
@@ -70,6 +82,17 @@ def deduplicateCSV():
         f.write(i + '\n')
 
 
+def changeToLine(change):
+    line = ""
+    for attr in map(lambda x: x['value'], attrs):
+        if callable(attr):
+            line += str(attr(change))
+        else:
+            line += str(reduce(dict.get, attr.split("."), change))
+        line += ","
+    return line[:-1]
+
+
 def writeChanges(changes):
     headers = False
     if not Path(filename).is_file():
@@ -78,14 +101,7 @@ def writeChanges(changes):
         if headers:
             f.write(','.join(map(lambda x: x['label'], attrs)) + '\n')
         for change in j:
-            line = ""
-            for attr in map(lambda x: x['value'], attrs):
-                if callable(attr):
-                    line += str(attr(change))
-                else:
-                    line += str(reduce(dict.get, attr.split("."), change))
-                line += ","
-            f.write(line[:-1] + "\n")
+            f.write(changeToLine(change) + "\n")
 
 
 if __name__ == "__main__":
