@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 from __future__ import print_function
 
+import os
 import numpy as np
 import tflearn
 
@@ -60,3 +61,7 @@ failed, passed = preprocess([failed, passed], [2])
 pred = model.predict([failed, passed])
 # print("Failed:", pred[0][1])
 # print("Passed:", pred[1][1])
+
+if not os.path.exists("saved_model"):
+    os.makedirs("saved_model")
+model.save("saved_model/model.tfl")
