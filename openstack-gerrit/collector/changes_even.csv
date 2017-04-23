@@ -1,4 +1,4 @@
-changeID,project,insertions,deletions,accountID,verified
+verified,changeID,project,insertions,deletions,accountID
 1,85789,openstack-infra/system-config,6,0,4146
 0,301864,openstack/nova,88,4,18247
 0,445017,openstack/vmware-nsx,3,3,6167
@@ -739,7 +739,6 @@ changeID,project,insertions,deletions,accountID,verified
 1,455619,openstack/fuel-web,3,0,24901
 0,337169,openstack-dev/ci-sandbox,1,0,21976
 1,418810,openstack/networking-calico,0,21,20630
-
 0,326977,openstack/fuel-library,12,7,10489
 0,336843,openstack-dev/ci-sandbox,1,0,21976
 0,412752,openstack-dev/ci-sandbox,0,0,23729
