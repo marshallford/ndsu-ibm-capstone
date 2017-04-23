@@ -1,3 +1,4 @@
+# https://github.com/locke105/streaming-python-testdrive/blob/master/speyer/ingest/gerrit.py
 from __future__ import print_function
 import logging
 import select

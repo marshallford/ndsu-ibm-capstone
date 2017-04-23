@@ -7,6 +7,7 @@ import csv
 from dateutil.parser import parse
 
 
+# attr function
 # given a change dict, returns 0 or 1 for Jenkins pass/fail
 def verified(change):
     value = change.get('labels', {}).get('Verified', {}).get('value')
@@ -18,6 +19,7 @@ def verified(change):
         return 1
 
 
+# attr function
 # given a change dict, return delta in seconds between created and updated time
 def created_updated_delta(change):
     created = parse(change['created'])
@@ -25,6 +27,7 @@ def created_updated_delta(change):
     return int((updated - created).total_seconds())
 
 
+# constants
 attrs = list([
     {'label': 'verified', 'value': verified},
     {'label': 'changeID', 'value': '_number'},
@@ -60,6 +63,7 @@ def textToJson(text):
     return json.loads(text[4:])
 
 
+# return size of csv in bytes
 def sizeOfCSV():
     try:
         return int(os.stat(filename).st_size)
@@ -67,32 +71,34 @@ def sizeOfCSV():
         return 0
 
 
+# remove duplicates and changes with a 'None' value for 'verified'
 def deduplicateCSV():
     newCSV = list()
+    seenKeys = set()
     f = open(filename, "r")
     reader = csv.reader(f, delimiter=',')
-    seenKeys = set()
     for row in reader:
         if row[0] == 'None' or row[1] in seenKeys:
             continue
-        seenKeys.add(row[0])
+        seenKeys.add(row[1])
         newCSV.append(','.join(row))
     f = open(filename, "w+")
     for i in newCSV:
         f.write(i + '\n')
 
 
-def changeToLine(change):
-    line = ""
+# return an array of the change's values
+def changeValues(change):
+    values = list()
     for attr in map(lambda x: x['value'], attrs):
         if callable(attr):
-            line += str(attr(change))
+            values.append(str(attr(change)))
         else:
-            line += str(reduce(dict.get, attr.split("."), change))
-        line += ","
-    return line[:-1]
+            values.append(str(reduce(dict.get, attr.split("."), change)))
+    return values
 
 
+# write a list of changes to the csv
 def writeChanges(changes):
     headers = False
     if not Path(filename).is_file():
@@ -101,7 +107,7 @@ def writeChanges(changes):
         if headers:
             f.write(','.join(map(lambda x: x['label'], attrs)) + '\n')
         for change in j:
-            f.write(changeToLine(change) + "\n")
+            f.write(','.join(changeValues(change)) + "\n")
 
 
 if __name__ == "__main__":
