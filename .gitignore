@@ -96,3 +96,6 @@ config.yaml
 
 # CSV
 *.csv
+
+# Saved model
+openstack-gerrit/saved_model
