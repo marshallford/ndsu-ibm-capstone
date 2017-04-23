@@ -28,10 +28,10 @@ def preprocess(changes, columns_to_delete):
     # Here we convert the project name to an int
     project_names = []
     for i in changes:
-        project_names.append(i[1])
+        project_names.append(i[0])
     project_dict = dict(convert_number(project_names))
     for i in changes:
-        i[1] = project_dict[i[1]]
+        i[0] = int(project_dict[i[0]])
 
     # for i in range(len(changes)):
         # Converting 'sex' field to float (id is 1 after removing labels column) # noqa
@@ -39,11 +39,12 @@ def preprocess(changes, columns_to_delete):
     return np.array(changes, dtype=np.float32)
 
 
+to_ignore = [0]
 # Preprocess data
-data = preprocess(data, [2])
+data = preprocess(data, to_ignore)
 
 # Build neural network
-net = tflearn.input_data(shape=[None, 4])
+net = tflearn.input_data(shape=[None, 5])
 net = tflearn.fully_connected(net, 32)
 net = tflearn.fully_connected(net, 32)
 net = tflearn.fully_connected(net, 2, activation='softmax')
@@ -54,13 +55,13 @@ model = tflearn.DNN(net)
 # Start training (apply gradient descent algorithm)
 model.fit(data, labels, n_epoch=10, batch_size=16, show_metric=True)
 
-failed = ['334758', 'openstack-dev/ci-sandbox', '1', '0', '21976']
-passed = ['457575', 'openstack/packstack', '60', '4', '13294']
+failed = [334758, 'openstack-dev/ci-sandbox', 1, 0, 21976, 51682]
+passed = [457575, 'openstack/packstack', 60, 4, 13294, 18906]
 # Preprocess data
-failed, passed = preprocess([failed, passed], [2])
+failed, passed = preprocess([failed, passed], to_ignore)
 pred = model.predict([failed, passed])
-# print("Failed:", pred[0][1])
-# print("Passed:", pred[1][1])
+print("Failed:", pred[0][1])
+print("Passed:", pred[1][1])
 
 if not os.path.exists("saved_model"):
     os.makedirs("saved_model")

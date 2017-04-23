@@ -4,6 +4,7 @@ from pathlib import Path
 import os
 from functools import reduce
 import csv
+from dateutil.parser import parse
 
 
 def verified(change):
@@ -16,6 +17,12 @@ def verified(change):
         return 1
 
 
+def created_updated_delta(change):
+    created = parse(change['created'])
+    updated = parse(change['updated'])
+    return int((updated - created).total_seconds())
+
+
 attrs = list([
     {'label': 'verified', 'value': verified},
     {'label': 'changeID', 'value': '_number'},
@@ -23,6 +30,7 @@ attrs = list([
     {'label': 'insertions', 'value': 'insertions'},
     {'label': 'deletions', 'value': 'deletions'},
     {'label': 'accountID', 'value': 'owner._account_id'},
+    {'label': 'created_updated_delta', 'value': created_updated_delta},
 ])
 filename = 'changes.csv'
 numberToIncrement = 500
