@@ -6,14 +6,24 @@ from functools import reduce
 import csv
 
 
-attrs = {
-    'changeID': '_number',
-    'project': 'project',
-    'insertions': 'insertions',
-    'deletions': 'deletions',
-    'accountID': 'owner._account_id',
-    'verified': 'labels.Verified.value'
-}
+def verified(change):
+    value = change.get('labels', {}).get('Verified', {}).get('value')
+    if value is None:
+        return None
+    elif value <= 0:
+        return 0
+    else:
+        return 1
+
+
+attrs = list([
+    {'label': 'verified', 'value': verified},
+    {'label': 'changeID', 'value': '_number'},
+    {'label': 'project', 'value': 'project'},
+    {'label': 'insertions', 'value': 'insertions'},
+    {'label': 'deletions', 'value': 'deletions'},
+    {'label': 'accountID', 'value': 'owner._account_id'},
+])
 filename = 'changes.csv'
 numberToIncrement = 500
 stopAtByteSize = 1000000  # 1000000  # 1MB
@@ -43,7 +53,7 @@ def deduplicateCSV():
     reader = csv.reader(f, delimiter=',')
     seenKeys = set()
     for row in reader:
-        if row[0] in seenKeys:
+        if row[0] == 'None' or row[1] in seenKeys:
             continue
         seenKeys.add(row[0])
         newCSV.append(','.join(row))
@@ -58,10 +68,10 @@ def writeChanges(changes):
         headers = True
     with open(filename, 'a+') as f:
         if headers:
-            f.write(','.join(list(attrs.keys())) + '\n')
+            f.write(','.join(map(lambda x: x['label'], attrs)) + '\n')
         for change in j:
             line = ""
-            for _, attr in attrs.items():
+            for attr in map(lambda x: x['value'], attrs):
                 if callable(attr):
                     line += str(attr(change))
                 else:
