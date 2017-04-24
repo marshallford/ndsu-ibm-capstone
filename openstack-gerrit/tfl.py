@@ -50,29 +50,30 @@ def preprocess(changes, columns_to_delete):
 
 
 to_ignore = [0]
-# Preprocess data
-data = preprocess(data, to_ignore)
+if __name__ == "__main__":
+    # Preprocess data
+    data = preprocess(data, to_ignore)
 
-# Build neural network
-net = tflearn.input_data(shape=[None, 5])
-net = tflearn.fully_connected(net, 32)
-net = tflearn.fully_connected(net, 32)
-net = tflearn.fully_connected(net, 2, activation='softmax')
-net = tflearn.regression(net)
+    # Build neural network
+    net = tflearn.input_data(shape=[None, 5])
+    net = tflearn.fully_connected(net, 32)
+    net = tflearn.fully_connected(net, 32)
+    net = tflearn.fully_connected(net, 2, activation='softmax')
+    net = tflearn.regression(net)
 
-# Define model
-model = tflearn.DNN(net)
-# Start training (apply gradient descent algorithm)
-model.fit(data, labels, n_epoch=10, batch_size=16, show_metric=True)
+    # Define model
+    model = tflearn.DNN(net)
+    # Start training (apply gradient descent algorithm)
+    model.fit(data, labels, n_epoch=10, batch_size=16, show_metric=True)
 
-failed = [334758, 'openstack-dev/ci-sandbox', 1, 0, 21976, 51682]
-passed = [457575, 'openstack/packstack', 60, 4, 13294, 18906]
-# Preprocess data
-failed, passed = preprocess([failed, passed], to_ignore)
-pred = model.predict([failed, passed])
-print("Failed:", pred[0][1])
-print("Passed:", pred[1][1])
+    failed = [334758, 'openstack-dev/ci-sandbox', 1, 0, 21976, 51682]
+    passed = [457575, 'openstack/packstack', 60, 4, 13294, 18906]
+    # Preprocess data
+    failed, passed = preprocess([failed, passed], to_ignore)
+    pred = model.predict([failed, passed])
+    print("Failed:", pred[0][1])
+    print("Passed:", pred[1][1])
 
-if not os.path.exists("saved_model"):
-    os.makedirs("saved_model")
-model.save("saved_model/model.tfl")
+    if not os.path.exists("saved_model"):
+        os.makedirs("saved_model")
+    model.save("saved_model/model.tfl")
