@@ -10,6 +10,8 @@ from tflearn.data_utils import load_csv
 data, labels = load_csv('changes.csv', target_column=0,
                         categorical_labels=True, n_classes=2)
 
+dict_path = "saved_model/project.dict"
+
 
 # used by inital model creation and for live predictions
 def setupModel():
@@ -38,31 +40,43 @@ def preprocess(changes, columns_to_delete):
     for column_to_delete in sorted(columns_to_delete, reverse=True):
         [passenger.pop(column_to_delete) for passenger in changes]
     # Here we convert the project name to an int
+
     project_names = []
+    # Load in old data
+    if os.path.isfile(dict_path):
+        with open(dict_path) as raw_data:
+            for item in raw_data:
+                if ':' in item:
+                    key, value = item.split(':', 1)
+                    project_names.append(key)
+
+    # create dict
     for i in changes:
         project_names.append(i[0])
+
+    # Deduplicate
+    project_names = set(project_names)
+
+    # Create dict
     project_dict = dict(convert_number(project_names))
+
+    # convert with dict
     for i in changes:
         i[0] = int(project_dict[i[0]])
-    with open("projects.dict", 'w') as f:
+
+    with open(dict_path, 'w') as f:
         for key, value in project_dict.items():
             f.write('%s:%s\n' % (key, value))
-    # This is how you read in projects.dict
-
     # data = dict()
-    # with open(myfile) as raw_data:
-    #    for item if raw_data:
-    #        if ':' in item:
-    #            key,value = item.split(':', 1)
-    #            data[key]=value
-    #        else:
-    #            pass # deal with bad lines of text here
-
-    return np.array(changes, dtype=np.float32)
+        return np.array(changes, dtype=np.float32)
 
 
 to_ignore = [0]
 if __name__ == "__main__":
+
+    # remove this to ensure that this is safe
+    if os.path.isfile(dict_path):
+        os.remove(dict_path)
     # Preprocess data
     data = preprocess(data, to_ignore)
     # Setup model
