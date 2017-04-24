@@ -17,7 +17,7 @@ dict_path = "saved_model/project.dict"
 # used by inital model creation and for live predictions
 def setupModel():
     # Build neural network
-    net = tflearn.input_data(shape=[None, 5])
+    net = tflearn.input_data(shape=[None, 4])
     net = tflearn.fully_connected(net, 32)
     net = tflearn.fully_connected(net, 32)
     net = tflearn.fully_connected(net, 2, activation='softmax')
@@ -72,7 +72,7 @@ def preprocess(changes, columns_to_delete):
         return np.array(changes, dtype=np.float32)
 
 
-to_ignore = [0]
+to_ignore = [0, 5]
 if __name__ == "__main__":
 
     # remove this to ensure that this is safe
