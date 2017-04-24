@@ -4,9 +4,10 @@ from __future__ import print_function
 import os
 import numpy as np
 import tflearn
+from tflearn.data_utils import load_csv
+os.environ['TF_CPP_MIN_LOG_LEVEL'] = '3'
 
 # Load CSV file, indicate that the first column represents labels
-from tflearn.data_utils import load_csv
 data, labels = load_csv('changes.csv', target_column=0,
                         categorical_labels=True, n_classes=2)
 
