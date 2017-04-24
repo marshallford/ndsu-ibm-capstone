@@ -32,8 +32,6 @@ def preprocess(changes, columns_to_delete):
     project_dict = dict(convert_number(project_names))
     for i in changes:
         i[0] = int(project_dict[i[0]])
-
-        print(i[0])
     with open("projects.dict", 'w') as f:
         for key, value in project_dict.items():
             f.write('%s:%s\n' % (key, value))
@@ -48,9 +46,6 @@ def preprocess(changes, columns_to_delete):
     #        else:
     #            pass # deal with bad lines of text here
 
-    # for i in range(len(changes)):
-    #   Converting 'sex' field to float (id is 1 after removing labels column) # noqa
-    #   changes[i][1] = 1. if changes[i][1] == 'female' else 0.
     return np.array(changes, dtype=np.float32)
 
 

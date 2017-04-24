@@ -3,7 +3,7 @@ import gerrit
 from collector.main import changeValues, queryChange, textToJson
 
 # get private ssh key
-f = open("/home/marshall/.ssh/marshallford-openstack", "r")
+f = open('/home/marshall/.ssh/marshallford-openstack', 'r')
 key = f.read()
 
 # get gerrit stream
