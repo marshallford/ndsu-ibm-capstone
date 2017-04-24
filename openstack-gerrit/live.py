@@ -1,5 +1,7 @@
 import json
 import gerrit
+import yaml
+import os
 from collector.main import changeValues, queryChange, textToJson
 from tfl import setupModel, preprocess, to_ignore
 
@@ -9,8 +11,14 @@ model.load("saved_model/model.tfl")
 
 
 # get private ssh key
-f = open('/home/marshall/.ssh/marshallford-openstack', 'r')
-key = f.read()
+configFile = 'config.yaml'
+config = {}
+if os.path.exists(configFile):
+    with open(configFile, 'r') as f:
+        config = yaml.load(f)
+else:
+    config['openstack_ssh_key'] = input("Path to openstack private key: ")
+key = open(config['openstack_ssh_key'], 'r').read()
 
 # get gerrit stream
 gerrit_stream = gerrit.GerritEvents(
