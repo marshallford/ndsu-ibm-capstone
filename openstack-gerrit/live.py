@@ -1,17 +1,10 @@
 import json
 import gerrit
-import tflearn
 from collector.main import changeValues, queryChange, textToJson
-from tfl import preprocess, to_ignore
+from tfl import setupModel, preprocess, to_ignore
 
-# load model ???
-net = tflearn.input_data(shape=[None, 5])
-net = tflearn.fully_connected(net, 32)
-net = tflearn.fully_connected(net, 32)
-net = tflearn.fully_connected(net, 2, activation='softmax')
-net = tflearn.regression(net)
-# define model
-model = tflearn.DNN(net)
+# load model ??
+model = setupModel()
 model.load("saved_model/model.tfl")
 
 
@@ -39,5 +32,5 @@ for event in gerrit_stream.events():
     print("### EVENT ###")
     print("Values: ", values[1:])
     print("Test: ", pred[0][1])
-    if values[0] is not None:
+    if values[0] != 'None':
         print("Actual score: ", values[0])

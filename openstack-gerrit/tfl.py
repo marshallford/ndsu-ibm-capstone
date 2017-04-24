@@ -11,6 +11,18 @@ data, labels = load_csv('changes.csv', target_column=0,
                         categorical_labels=True, n_classes=2)
 
 
+# used by inital model creation and for live predictions
+def setupModel():
+    # Build neural network
+    net = tflearn.input_data(shape=[None, 5])
+    net = tflearn.fully_connected(net, 32)
+    net = tflearn.fully_connected(net, 32)
+    net = tflearn.fully_connected(net, 2, activation='softmax')
+    net = tflearn.regression(net)
+    # Create model
+    return tflearn.DNN(net)
+
+
 def convert_number(x):
     # get unique elements
     for i in x:
@@ -53,16 +65,8 @@ to_ignore = [0]
 if __name__ == "__main__":
     # Preprocess data
     data = preprocess(data, to_ignore)
-
-    # Build neural network
-    net = tflearn.input_data(shape=[None, 5])
-    net = tflearn.fully_connected(net, 32)
-    net = tflearn.fully_connected(net, 32)
-    net = tflearn.fully_connected(net, 2, activation='softmax')
-    net = tflearn.regression(net)
-
-    # Define model
-    model = tflearn.DNN(net)
+    # Setup model
+    model = setupModel()
     # Start training (apply gradient descent algorithm)
     model.fit(data, labels, n_epoch=10, batch_size=16, show_metric=True)
 
