@@ -14,6 +14,15 @@ def getConnection():
 
 def download(bucket, key):
     conn = getConnection()
+    # TODO: generate folder structure if required
+    path = '/tmp/object_storage_tensorflow/{}/{}'.format(bucket, key)
     # TODO: return errors
-    conn.Bucket(bucket).download_file(key, '/tmp/' + key)
-    return '/tmp/' + key
+    conn.Bucket(bucket).download_file(key, path)
+    return path
+
+
+def upload(bucket, key, data):
+    conn = getConnection()
+    # TODO: return errors
+    conn.Bucket(bucket).put_object(Key=key, Body=data)
+    return key
