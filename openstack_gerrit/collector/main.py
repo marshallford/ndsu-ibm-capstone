@@ -9,6 +9,7 @@ import json
 import logging
 import os
 from pathlib import Path
+import urllib.parse
 
 import requests
 
@@ -73,6 +74,7 @@ class GerritSession(requests.Session):
 
     def query_changes(self, query, start):
         """Return a list of changes from a given query from offset 'start'"""
+        query = urllib.parse.quote(query)
 
         url = "{}/changes/?q={}&{}&start={}" # NOQA
         resp = self.get(url.format(self.base_url, query, changeUrlParams, str(start))) # NOQA
@@ -146,8 +148,9 @@ def writeChanges(changes):
 
 
 def main():
-    # status:open label:Verified reviewer:"Jenkins <jenkins@openstack.org>"
-    query = 'status%3Aopen%20label%3AVerified%20reviewer%3A%22Jenkins%20%3Cjenkins%40openstack.org%3E%22' # NOQA
+    query = ('status:open '
+             'label:Verified '
+             'reviewer:"Jenkins <jenkins@openstack.org>"')
 
     gerrit = GerritSession()
 
