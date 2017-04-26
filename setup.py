@@ -13,5 +13,10 @@ setup(
     author='Marshall ford',
     author_email='',
     url='',
-    install_requires=['boto3', 'pyyaml'],
+    install_requires=[
+        'boto3',
+        'pyyaml',
+        'requests',
+        'paramiko'
+    ],
 )
