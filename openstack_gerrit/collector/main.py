@@ -46,19 +46,25 @@ attrs = list([
     {'label': 'accountID', 'value': 'owner._account_id'},
     {'label': 'created_updated_delta', 'value': created_updated_delta},
 ])
+
 filename = 'changes.csv'
-numberToIncrement = 500
-stopAtByteSize = 1000000  # 1000000  # 1MB
-baseUrl = 'https://review.openstack.org'
+
 changeUrlParams = 'o=CURRENT_REVISION&o=CURRENT_COMMIT&o=CURRENT_FILES&o=DETAILED_ACCOUNTS&o=LABELS' # NOQA
+
+KB = 1024 * 1
+MB = 1024 * KB
+GB = 1024 * MB
+stopAtByteSize = 1 * MB
 
 
 class GerritSession(requests.Session):
 
-    # return Response object of single change
+    base_url = 'https://review.openstack.org'
+
     def query_change(self, change_id):
+        """Return a dict representing a single change."""
         url = "{}/changes/{}?{}"
-        resp = self.get(url.format(baseUrl, change_id, changeUrlParams))
+        resp = self.get(url.format(self.base_url, change_id, changeUrlParams))
         return self._strip_gerrit_weirdness(resp)
 
     def _strip_gerrit_weirdness(self, response):
@@ -69,10 +75,10 @@ class GerritSession(requests.Session):
         """Return a list of changes from a given query from offset 'start'"""
 
         url = "{}/changes/?q={}&{}&start={}" # NOQA
-        resp = self.get(url.format(baseUrl, query, changeUrlParams, str(start))) # NOQA
+        resp = self.get(url.format(self.base_url, query, changeUrlParams, str(start))) # NOQA
         return self._strip_gerrit_weirdness(resp)
 
-    def get_changes(self, query):
+    def get_changes(self, query, chunk_size=500):
         """
         Return a generator that can be used to
         iterate though all changes from a query.
@@ -88,7 +94,7 @@ class GerritSession(requests.Session):
             for change in changes:
                 yield change
 
-            start += numberToIncrement
+            start += chunk_size
 
 
 # return size of csv in bytes
@@ -101,7 +107,7 @@ def sizeOfCSV():
 
 # remove duplicates and changes with a 'None' value for 'verified'
 def deduplicateCSV():
-    newCSV = list()
+    newCSV = []
     seenKeys = set()
     f = open(filename, "r")
     reader = csv.reader(f, delimiter=',')
@@ -117,7 +123,7 @@ def deduplicateCSV():
 
 # return an array of the change's values
 def changeValues(change):
-    values = list()
+    values = []
     for attr in map(lambda x: x['value'], attrs):
         if callable(attr):
             values.append(str(attr(change)))
