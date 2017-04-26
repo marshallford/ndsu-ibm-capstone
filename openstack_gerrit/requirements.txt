@@ -1,0 +1,6 @@
+requests
+numpy
+paramiko
+six
+tflearn
+pyyaml

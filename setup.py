@@ -15,8 +15,6 @@ setup(
     url='',
     install_requires=[
         'boto3',
-        'pyyaml',
-        'requests',
-        'paramiko'
+        'pyyaml'
     ],
 )

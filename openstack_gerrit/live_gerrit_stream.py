@@ -3,9 +3,9 @@ import gerrit
 import yaml
 import os
 from collector.main import changeValues, GerritSession
-from tfl import setupModel, preprocess, to_ignore
+from generate_model import setupModel, preprocess, to_ignore
 
-# load model ??
+# load model
 model = setupModel()
 model.load("saved_model/model.tfl")
 
@@ -33,10 +33,8 @@ for event in gerrit_stream.events():
     changeId = eventJson.get('change', {}).get('number', None)
     if changeId is None:
         continue
-
     change = gerrit_requester.query_change(changeId)
     values = changeValues(change)
-    # this shouldn't work, we aren't converting project string to id yet
     test = preprocess([values[1:]], to_ignore)
     pred = model.predict(test)
     print("### EVENT ###")

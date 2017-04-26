@@ -4,6 +4,12 @@ import unittest
 import object_storage_tensorflow as obj_tf
 
 
+def travisPullRequest():
+    isCi = os.environ.get("CONTINUOUS_INTEGRATION") == 'true'
+    isPr = os.environ.get("TRAVIS_PULL_REQUEST") != 'false'
+    return isCi and isPr
+
+
 class TestStringMethods(unittest.TestCase):
 
     def test_upper(self):
@@ -24,7 +30,7 @@ class TestStringMethods(unittest.TestCase):
 class TestS3Connection(unittest.TestCase):
 
     @unittest.skipUnless(
-        os.environ.get("TRAVIS_PULL_REQUEST") == 'false',
+        not travisPullRequest(),
         "S3 tests will fail for Pull Requests due to lack of secrets.")
     def test_buckets(self):
         conn = obj_tf.s3.getConnection()

@@ -98,7 +98,7 @@ config.yaml
 *.csv
 
 # Saved model
-openstack-gerrit/saved_model
+openstack_gerrit/saved_model
 
 # Saved Python dict
 *.dict
