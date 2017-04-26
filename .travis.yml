@@ -5,6 +5,7 @@ python:
 install:
   - pip install .
   - pip install -r requirements.txt
+  - pip install -r openstack_gerrit/requirements.txt
 # command to run tests
 script:
   - make test
