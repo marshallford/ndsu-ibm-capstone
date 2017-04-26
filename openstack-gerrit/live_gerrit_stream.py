@@ -2,7 +2,7 @@ import json
 import gerrit
 import yaml
 import os
-from collector.main import changeValues, queryChange, textToJson
+from collector.main import changeValues, GerritSession
 from tfl import setupModel, preprocess, to_ignore
 
 # load model ??
@@ -26,13 +26,15 @@ gerrit_stream = gerrit.GerritEvents(
   host='review.openstack.org',
   key=key)
 
+gerrit_requester = GerritSession()
 # loop over gerrit events
 for event in gerrit_stream.events():
     eventJson = json.loads(event)
     changeId = eventJson.get('change', {}).get('number', None)
     if changeId is None:
         continue
-    change = textToJson(queryChange(changeId).text)
+
+    change = gerrit_requester.query_change(changeId)
     values = changeValues(change)
     # this shouldn't work, we aren't converting project string to id yet
     test = preprocess([values[1:]], to_ignore)

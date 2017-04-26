@@ -1,10 +1,19 @@
-import requests
-import json
-from pathlib import Path
-import os
-from functools import reduce
+#!/usr/bin/env python
+
+from __future__ import print_function
+
 import csv
 from dateutil.parser import parse
+from functools import reduce
+import json
+import logging
+import os
+from pathlib import Path
+
+import requests
+
+
+LOG = logging.getLogger(__name__)
 
 
 # attr function
@@ -44,23 +53,42 @@ baseUrl = 'https://review.openstack.org'
 changeUrlParams = 'o=CURRENT_REVISION&o=CURRENT_COMMIT&o=CURRENT_FILES&o=DETAILED_ACCOUNTS&o=LABELS' # NOQA
 
 
-# return Response object of single change
-def queryChange(id):
-    url = "{}/changes/{}?{}"
-    return requests.get(url.format(baseUrl, id, changeUrlParams))
+class GerritSession(requests.Session):
 
+    # return Response object of single change
+    def query_change(self, change_id):
+        url = "{}/changes/{}?{}"
+        resp = self.get(url.format(baseUrl, change_id, changeUrlParams))
+        return self._strip_gerrit_weirdness(resp)
 
-# return Response object of some changes
-def queryChanges(start):
-    # status:open label:Verified reviewer:"Jenkins <jenkins@openstack.org>"
-    query = 'status%3Aopen%20label%3AVerified%20reviewer%3A%22Jenkins%20%3Cjenkins%40openstack.org%3E%22' # NOQA
-    url = "{}/changes/?q={}&{}&start={}" # NOQA
-    return requests.get(url.format(baseUrl, query, changeUrlParams, str(start))) # NOQA
+    def _strip_gerrit_weirdness(self, response):
+        xssi_crap, jsonable = response.text.split('\n', 1)
+        return json.loads(jsonable)
 
+    def query_changes(self, query, start):
+        """Return a list of changes from a given query from offset 'start'"""
 
-# given text, return json
-def textToJson(text):
-    return json.loads(text[4:])
+        url = "{}/changes/?q={}&{}&start={}" # NOQA
+        resp = self.get(url.format(baseUrl, query, changeUrlParams, str(start))) # NOQA
+        return self._strip_gerrit_weirdness(resp)
+
+    def get_changes(self, query):
+        """
+        Return a generator that can be used to
+        iterate though all changes from a query.
+        """
+        start = 0
+        while sizeOfCSV() < stopAtByteSize:
+            changes = self.query_changes(query, start)
+            LOG.debug("Got {0} changes to process".format(len(changes)))
+            if not changes:
+                print("Out of changes...")
+                break
+
+            for change in changes:
+                yield change
+
+            start += numberToIncrement
 
 
 # return size of csv in bytes
@@ -100,23 +128,27 @@ def changeValues(change):
 
 # write a list of changes to the csv
 def writeChanges(changes):
-    headers = False
+    needs_headers = False
     if not Path(filename).is_file():
-        headers = True
+        needs_headers = True
+
     with open(filename, 'a+') as f:
-        if headers:
+        if needs_headers:
             f.write(','.join(map(lambda x: x['label'], attrs)) + '\n')
-        for change in j:
+        for change in changes:
             f.write(','.join(changeValues(change)) + "\n")
 
 
-if __name__ == "__main__":
-    n = 0
-    while sizeOfCSV() < stopAtByteSize:
-        j = textToJson(queryChanges(n).text)
-        if (len(j) < 1):
-            print("Out of changes...")
-            break
-        writeChanges(j)
-        n += numberToIncrement
+def main():
+    # status:open label:Verified reviewer:"Jenkins <jenkins@openstack.org>"
+    query = 'status%3Aopen%20label%3AVerified%20reviewer%3A%22Jenkins%20%3Cjenkins%40openstack.org%3E%22' # NOQA
+
+    gerrit = GerritSession()
+
+    writeChanges(gerrit.get_changes(query))
     deduplicateCSV()
+
+
+if __name__ == "__main__":
+    logging.basicConfig(level=logging.DEBUG)
+    main()
