@@ -68,8 +68,8 @@ def preprocess(changes, columns_to_delete):
     with open(dict_path, 'w') as f:
         for key, value in project_dict.items():
             f.write('%s:%s\n' % (key, value))
-    # data = dict()
-        return np.array(changes, dtype=np.float32)
+
+    return np.array(changes, dtype=np.float32)
 
 
 to_ignore = [0, 5]

@@ -6,7 +6,7 @@ TensorFlow Object Storage Data Plugin
 ## Workstation/Dev setup
 
 ### Installation
-* Python 3?
+* Python 3
 * Dependencies: `pip install .`
 * Dev Dependencies: `pip install -r requirements.txt`
 * Pathing ?: `python setup.py develop`
@@ -15,7 +15,6 @@ TensorFlow Object Storage Data Plugin
 * Lint all: `make lint`
 
 #### Example config.yaml
-
 ```
 endpoint: https://s3.foo.bar.net
 accessKeyId: kpXpAspCbzZwNvxF
@@ -23,7 +22,6 @@ secretAccessKey: TAbnyKdWbTtsyhDm
 ```
 
 #### Env vars
-
 to add: `export FOO="str"`
 
 * `NDSU_IBM_ENDPOINT`
@@ -32,3 +30,19 @@ to add: `export FOO="str"`
 
 ### Testing
 * run tests: `make test`
+
+## Gerrit OpenStack demo
+
+### Installation
+* Dev Dependencies: `pip install -r openstack_gerrit/requirements.txt`
+
+### Usage
+* run collector: `cd collector && python main.py`
+* even out dataset (optional): `perl get_50_50.perl`
+* generate model: `python generate_model.py`
+* test live data against model: `python live_gerrit_stream.py`
+
+#### Example config.yaml
+```
+openstack_ssh_key: "/home/marshall/.ssh/marshallford-openstack"
+```
