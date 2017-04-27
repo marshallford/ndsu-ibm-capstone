@@ -11,7 +11,7 @@ os.environ['TF_CPP_MIN_LOG_LEVEL'] = '3'
 data, labels = load_csv('changes.csv', target_column=0,
                         categorical_labels=True, n_classes=2)
 
-dict_path = "saved_model/project.dict"
+project_name_mapping_path = "saved_model/project_name_mapping.npy"
 
 
 # used by inital model creation and for live predictions
@@ -40,34 +40,25 @@ def preprocess(changes, columns_to_delete):
     # Sort by descending id and delete columns
     for column_to_delete in sorted(columns_to_delete, reverse=True):
         [passenger.pop(column_to_delete) for passenger in changes]
-    # Here we convert the project name to an int
 
+    # Project names to integer
     project_names = []
     # Load in old data
-    if os.path.isfile(dict_path):
-        with open(dict_path) as raw_data:
-            for item in raw_data:
-                if ':' in item:
-                    key, value = item.split(':', 1)
-                    project_names.append(key)
-
-    # create dict
+    if os.path.isfile(project_name_mapping_path):
+        old_projects = np.load(project_name_mapping_path).item()
+        project_names = list(old_projects.keys())
+    # Load in new data
     for i in changes:
         project_names.append(i[0])
-
-    # Deduplicate
+    # Deduplicate names
     project_names = set(project_names)
-
     # Create dict
-    project_dict = dict(convert_number(project_names))
-
-    # convert with dict
+    projects = dict(convert_number(project_names))
+    # Change out name for mapped integer
     for i in changes:
-        i[0] = int(project_dict[i[0]])
-
-    with open(dict_path, 'w') as f:
-        for key, value in project_dict.items():
-            f.write('%s:%s\n' % (key, value))
+        i[0] = int(projects[i[0]])
+    # Save mapping to file
+    np.save(project_name_mapping_path, projects)
 
     return np.array(changes, dtype=np.float32)
 
@@ -76,8 +67,8 @@ to_ignore = [0, 5]
 if __name__ == "__main__":
 
     # remove this to ensure that this is safe
-    if os.path.isfile(dict_path):
-        os.remove(dict_path)
+    if os.path.isfile(project_name_mapping_path):
+        os.remove(project_name_mapping_path)
     # Preprocess data
     data = preprocess(data, to_ignore)
     # Setup model
