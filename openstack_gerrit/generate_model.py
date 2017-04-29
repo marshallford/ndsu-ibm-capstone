@@ -40,50 +40,40 @@ def preprocess(changes, columns_to_delete):
     # Sort by descending id and delete columns
     for column_to_delete in sorted(columns_to_delete, reverse=True):
         [passenger.pop(column_to_delete) for passenger in changes]
-
-    # Project names to integer
-    project_names = []
     # Load in old data
+    project_names = []
     if os.path.isfile(project_name_mapping_path):
         old_projects = np.load(project_name_mapping_path).item()
         project_names = list(old_projects.keys())
-    # Load in new data
-    for i in changes:
-        project_names.append(i[0])
-    # Deduplicate names
-    project_names = set(project_names)
+    else:
+        exit('project mapping file does not exist')
     # Create dict
     projects = dict(convert_number(project_names))
     # Change out name for mapped integer
     for i in changes:
-        i[0] = int(projects[i[0]])
-    # Save mapping to file
-    np.save(project_name_mapping_path, projects)
+        project_name = i[0]
+        if project_name in projects:
+            i[0] = int(projects[project_name])
+        else:
+            i[0] = -1
 
-    return np.array(changes, dtype=np.float32)
+    return [np.array(changes, dtype=np.float32), projects]
 
 
 to_ignore = [0, 5]
 if __name__ == "__main__":
-
-    # remove this to ensure that this is safe
-    if os.path.isfile(project_name_mapping_path):
-        os.remove(project_name_mapping_path)
     # Preprocess data
-    data = preprocess(data, to_ignore)
+    data, projects = preprocess(data, to_ignore)
     # Setup model
     model = setupModel()
     # Start training (apply gradient descent algorithm)
     model.fit(data, labels, n_epoch=10, batch_size=16, show_metric=True)
 
-    failed = [334758, 'openstack-dev/ci-sandbox', 1, 0, 21976, 51682]
-    passed = [457575, 'openstack/packstack', 60, 4, 13294, 18906]
-    # Preprocess data
-    failed, passed = preprocess([failed, passed], to_ignore)
-    pred = model.predict([failed, passed])
-    print("Failed:", pred[0][1])
-    print("Passed:", pred[1][1])
-
-    if not os.path.exists("saved_model"):
-        os.makedirs("saved_model")
-    model.save("saved_model/model.tfl")
+    shouldSave = input('Save model and mappings to file? [Y/n]: ').lower()
+    if (shouldSave == '') or (list(shouldSave)[0] == 'y'):
+        if not os.path.exists("saved_model"):
+            os.makedirs("saved_model")
+        # Save TF model
+        model.save("saved_model/model.tfl")
+        # Save project mapping
+        np.save(project_name_mapping_path, projects)

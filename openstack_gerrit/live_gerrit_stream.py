@@ -36,9 +36,12 @@ for event in gerrit_stream.events():
     change = gerrit_requester.query_change(changeId)
     values = changeValues(change)
     test = preprocess([values[1:]], to_ignore)
-    pred = model.predict(test)
     print("### EVENT ###")
     print("Values: ", values[1:])
-    print("Test: ", pred[0][1])
-    if values[0] != 'None':
-        print("Actual score: ", values[0])
+    if test[0] is '-1':
+        print("Test: not run, project name not included in model")
+    else:
+        pred = model.predict(test)
+        print("Test: ", pred[0][1])
+        if values[0] != 'None':
+            print("Actual score: ", values[0])
