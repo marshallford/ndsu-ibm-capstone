@@ -1,28 +1,25 @@
 import json
 import gerrit
-import yaml
-import os
+import object_storage_tensorflow as obj_tf
 from collector.main import changeValues, GerritSession
-from generate_model import setupModel, preprocess, to_ignore
+from generate_model import setupModel, getConfig, preprocess, to_ignore
+
+config = getConfig()
 
 # load model
 model = setupModel()
-model.load("saved_model/model.tfl")
+path, _ = obj_tf.s3.downloadFolder(config['bucket'], config['remote_folder'])
+model.load("{}/model.tfl".format(path))
 
 
 # get private ssh key
-configFile = 'config.yaml'
-config = {}
-if os.path.exists(configFile):
-    with open(configFile, 'r') as f:
-        config = yaml.load(f)
-else:
+if 'openstack_ssh_key' not in config:
     config['openstack_ssh_key'] = input("Path to openstack private key: ")
 key = open(config['openstack_ssh_key'], 'r').read()
 
 # get gerrit stream
 gerrit_stream = gerrit.GerritEvents(
-  userid='marshallford',
+  userid=config['userid'],
   host='review.openstack.org',
   key=key)
 
@@ -35,7 +32,7 @@ for event in gerrit_stream.events():
         continue
     change = gerrit_requester.query_change(changeId)
     values = changeValues(change)
-    test = preprocess([values[1:]], to_ignore)
+    test, _ = preprocess([values[1:]], to_ignore)
     print("### EVENT ###")
     print("Values: ", values[1:])
     if test[0] is '-1':

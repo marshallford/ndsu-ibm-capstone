@@ -2,16 +2,18 @@
 from __future__ import print_function
 
 import os
+import yaml
 import numpy as np
 import tflearn
 from tflearn.data_utils import load_csv
+import object_storage_tensorflow as obj_tf
 os.environ['TF_CPP_MIN_LOG_LEVEL'] = '3'
 
 # Load CSV file, indicate that the first column represents labels
 data, labels = load_csv('changes.csv', target_column=0,
                         categorical_labels=True, n_classes=2)
 
-project_name_mapping_path = "saved_model/project_name_mapping.npy"
+project_name_mapping_file = 'project_name_mapping.npy'
 
 
 # used by inital model creation and for live predictions
@@ -36,17 +38,30 @@ def convert_number(x):
         return y
 
 
+def getConfig():
+    configFile = 'config.yaml'
+    config = {}
+    if os.path.exists(configFile):
+        with open(configFile, 'r') as f:
+            config = yaml.load(f)
+    return config
+
+
+config = getConfig()
+bucket = config['bucket']
+remoteFolder = config['remote_folder']
+
+
 def preprocess(changes, columns_to_delete):
     # Sort by descending id and delete columns
     for column_to_delete in sorted(columns_to_delete, reverse=True):
-        [passenger.pop(column_to_delete) for passenger in changes]
+        [change.pop(column_to_delete) for change in changes]
     # Load in old data
     project_names = []
-    if os.path.isfile(project_name_mapping_path):
-        old_projects = np.load(project_name_mapping_path).item()
+    remotePath = obj_tf.s3.getBaseFolderPath(bucket, remoteFolder)
+    if os.path.isfile(remotePath):
+        old_projects = np.load(remotePath).item()
         project_names = list(old_projects.keys())
-    else:
-        exit('project mapping file does not exist')
     # Create dict
     projects = dict(convert_number(project_names))
     # Change out name for mapped integer
@@ -71,9 +86,19 @@ if __name__ == "__main__":
 
     shouldSave = input('Save model and mappings to file? [Y/n]: ').lower()
     if (shouldSave == '') or (list(shouldSave)[0] == 'y'):
-        if not os.path.exists("saved_model"):
-            os.makedirs("saved_model")
+        localSave = "saved_model"
+        if not os.path.exists(localSave):
+            os.makedirs(localSave)
         # Save TF model
-        model.save("saved_model/model.tfl")
+        model.save("{}/model.tfl".format(localSave))
         # Save project mapping
-        np.save(project_name_mapping_path, projects)
+        np.save("{}/{}".format(localSave, project_name_mapping_file), projects)
+        # Upload to object storage
+        filenames = []
+        data = []
+        for item in os.listdir(localSave):
+            path = os.path.join(localSave, item)
+            if os.path.isfile(path):
+                filenames.append(item)
+                data.append(open(path, 'rb', ).read())
+        obj_tf.s3.uploadFolder(bucket, remoteFolder, filenames, data)

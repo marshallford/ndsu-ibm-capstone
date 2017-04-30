@@ -45,4 +45,7 @@ to add: `export FOO="str"`
 #### Example config.yaml
 ```
 openstack_ssh_key: "/home/marshall/.ssh/marshallford-openstack"
+userid: "marshallford"
+bucket: "my-test-bucket"
+remote_folder: "saved_model"
 ```

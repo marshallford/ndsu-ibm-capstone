@@ -17,7 +17,7 @@ for item in os.listdir(root):
     path = os.path.join(root, item)
     if os.path.isfile(path):
         filenames.append(item)
-        data.append(open(path, 'r').read())
+        data.append(open(path, 'rb').read())
 
 obj_tf.s3.uploadFolder('my-test-bucket', folder, filenames, data)
 obj_tf.s3.downloadFolder('my-test-bucket', folder)

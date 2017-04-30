@@ -2,6 +2,8 @@ import boto3
 import os
 from . import config
 
+rootPath = '/tmp/object_storage_tensorflow'
+
 
 def getConnection():
     info = config.get()
@@ -13,15 +15,22 @@ def getConnection():
     )
 
 
+def getBasePath(bucket):
+    return '{}/{}'.format(rootPath, bucket)
+
+
+def getBaseFolderPath(bucket, folder):
+    return '{}/{}'.format(getBasePath(bucket), folder)
+
+
 def download(bucket, key):
     conn = getConnection()
-    basePath = '/tmp/object_storage_tensorflow/{}'.format(bucket)
-    if not os.path.exists(basePath):
-        os.makedirs(basePath)
-    path = '{}/{}'.format(basePath, key)
+    if not os.path.exists(getBasePath(bucket)):
+        os.makedirs(getBasePath(bucket))
+    path = '{}/{}'.format(rootPath, key)
     # TODO: return errors
     conn.Bucket(bucket).download_file(key, path)
-    return path
+    return [path, key]
 
 
 def upload(bucket, key, data):
@@ -33,16 +42,16 @@ def upload(bucket, key, data):
 
 def downloadFolder(bucket, folder):
     conn = getConnection()
-    basePath = '/tmp/object_storage_tensorflow/{}/{}'.format(bucket, folder)
-    if not os.path.exists(basePath):
-        os.makedirs(basePath)
+    baseFolderPath = getBaseFolderPath(bucket, folder)
+    if not os.path.exists(baseFolderPath):
+        os.makedirs(baseFolderPath)
     prefix = '{}/'.format(folder)
     keys = []
     for obj in conn.Bucket(bucket).objects.filter(Prefix=prefix):
-        path = '{}/{}'.format(basePath, obj.key.split('/', 1)[1])
+        path = '{}/{}'.format(baseFolderPath, obj.key.split('/', 1)[1])
         conn.Bucket(bucket).download_file(obj.key, path)
         keys.append(obj.key)
-    return keys
+    return [baseFolderPath, keys]
 
 
 def uploadFolder(bucket, prefix, keys, data):
