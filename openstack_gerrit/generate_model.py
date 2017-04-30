@@ -63,7 +63,9 @@ def preprocess(changes, columns_to_delete):
         old_projects = np.load(remotePath).item()
         project_names = list(old_projects.keys())
     # Create dict
-    projects = dict(convert_number(project_names))
+    projects = {}
+    if len(project_names) is not 0:
+        projects = dict(convert_number(project_names))
     # Change out name for mapped integer
     for i in changes:
         project_name = i[0]
@@ -82,6 +84,7 @@ if __name__ == "__main__":
     # Setup model
     model = setupModel()
     # Start training (apply gradient descent algorithm)
+    print('training on data...')
     model.fit(data, labels, n_epoch=10, batch_size=16, show_metric=True)
 
     shouldSave = input('Save model and mappings to file? [Y/n]: ').lower()
@@ -90,8 +93,10 @@ if __name__ == "__main__":
         if not os.path.exists(localSave):
             os.makedirs(localSave)
         # Save TF model
+        print("saving model...")
         model.save("{}/model.tfl".format(localSave))
         # Save project mapping
+        print("saving project id mapping...")
         np.save("{}/{}".format(localSave, project_name_mapping_file), projects)
         # Upload to object storage
         filenames = []
@@ -101,4 +106,6 @@ if __name__ == "__main__":
             if os.path.isfile(path):
                 filenames.append(item)
                 data.append(open(path, 'rb', ).read())
+        print("uploading to object storage (S3)...")
         obj_tf.s3.uploadFolder(bucket, remoteFolder, filenames, data)
+        print('finished.')

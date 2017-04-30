@@ -1,4 +1,5 @@
 import json
+import sys
 import gerrit
 import object_storage_tensorflow as obj_tf
 from collector.main import changeValues, GerritSession
@@ -8,6 +9,7 @@ config = getConfig()
 
 # load model
 model = setupModel()
+print('downloading model and mapping from object storage (S3)...')
 path, _ = obj_tf.s3.downloadFolder(config['bucket'], config['remote_folder'])
 model.load("{}/model.tfl".format(path))
 
@@ -25,20 +27,25 @@ gerrit_stream = gerrit.GerritEvents(
 
 gerrit_requester = GerritSession()
 # loop over gerrit events
-for event in gerrit_stream.events():
-    eventJson = json.loads(event)
-    changeId = eventJson.get('change', {}).get('number', None)
-    if changeId is None:
-        continue
-    change = gerrit_requester.query_change(changeId)
-    values = changeValues(change)
-    test, _ = preprocess([values[1:]], to_ignore)
-    print("### EVENT ###")
-    print("Values: ", values[1:])
-    if test[0] is '-1':
-        print("Test: not run, project name not included in model")
-    else:
-        pred = model.predict(test)
-        print("Test: ", pred[0][1])
-        if values[0] != 'None':
-            print("Actual score: ", values[0])
+print('monitoring gerrit events...')
+try:
+    for event in gerrit_stream.events():
+        eventJson = json.loads(event)
+        changeId = eventJson.get('change', {}).get('number', None)
+        if changeId is None:
+            continue
+        change = gerrit_requester.query_change(changeId)
+        values = changeValues(change)
+        test, _ = preprocess([values[1:]], to_ignore)
+        print("### EVENT ###")
+        print("Values: ", values[1:])
+        if test[0] is '-1':
+            print("Test: not run, project name not included in model")
+        else:
+            pred = model.predict(test)
+            print("Test: ", pred[0][1])
+            if values[0] != 'None':
+                print("Actual score: ", values[0])
+except KeyboardInterrupt:
+    print("connection closed...")
+    sys.exit(0)
