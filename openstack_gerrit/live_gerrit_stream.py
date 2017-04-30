@@ -9,7 +9,7 @@ config = getConfig()
 
 # load model
 model = setupModel()
-print('downloading model and mapping from object storage (S3)...')
+print('downloading model from object storage (S3)...')
 path, _ = obj_tf.s3.downloadFolder(config['bucket'], config['remote_folder'])
 model.load("{}/model.tfl".format(path))
 
@@ -36,7 +36,7 @@ try:
             continue
         change = gerrit_requester.query_change(changeId)
         values = changeValues(change)
-        test, _ = preprocess([values[1:]], to_ignore)
+        test, _ = preprocess([values[1:]], to_ignore, True)
         print("### EVENT ###")
         print("Values: ", values[1:])
         if test[0] is '-1':

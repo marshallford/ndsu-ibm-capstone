@@ -52,42 +52,41 @@ bucket = config['bucket']
 remoteFolder = config['remote_folder']
 
 
-def preprocess(changes, columns_to_delete):
+def preprocess(changes, columns_to_delete, is_live):
     # Sort by descending id and delete columns
     for column_to_delete in sorted(columns_to_delete, reverse=True):
         [change.pop(column_to_delete) for change in changes]
-    # Load in old data
-    project_names = []
-    remotePath = obj_tf.s3.getBaseFolderPath(bucket, remoteFolder)
-    if os.path.isfile(remotePath):
-        old_projects = np.load(remotePath).item()
-        project_names = list(old_projects.keys())
-    # Create dict
+    # Project id mappings
     projects = {}
-    if len(project_names) is not 0:
+    if is_live:
+        remotePath = obj_tf.s3.getBaseFolderPath(bucket, remoteFolder)
+        projects_file = '{}/{}'.format(remotePath, project_name_mapping_file)
+        projects = np.load(projects_file).item()
+    else:
+        project_names = []
+        for i in changes:
+            project_names.append(i[0])
         projects = dict(convert_number(project_names))
-    # Change out name for mapped integer
     for i in changes:
         project_name = i[0]
         if project_name in projects:
             i[0] = int(projects[project_name])
         else:
             i[0] = -1
-
     return [np.array(changes, dtype=np.float32), projects]
 
 
 to_ignore = [0, 5]
 if __name__ == "__main__":
     # Preprocess data
-    data, projects = preprocess(data, to_ignore)
+    data, projects = preprocess(data, to_ignore, False)
     # Setup model
     model = setupModel()
     # Start training (apply gradient descent algorithm)
     print('training on data...')
     model.fit(data, labels, n_epoch=10, batch_size=16, show_metric=True)
 
-    shouldSave = input('Save model and mappings to file? [Y/n]: ').lower()
+    shouldSave = input('Save model to file? [Y/n]: ').lower()
     if (shouldSave == '') or (list(shouldSave)[0] == 'y'):
         localSave = "saved_model"
         if not os.path.exists(localSave):
