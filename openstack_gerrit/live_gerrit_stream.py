@@ -26,9 +26,11 @@ gerrit_stream = gerrit.GerritEvents(
   key=key)
 
 gerrit_requester = GerritSession()
+
+
 # loop over gerrit events
-print('monitoring gerrit events...')
-try:
+def monitorGerrit():
+    print('monitoring gerrit events...')
     for event in gerrit_stream.events():
         eventJson = json.loads(event)
         changeId = eventJson.get('change', {}).get('number', None)
@@ -46,6 +48,11 @@ try:
             print("Test: ", pred[0][1])
             if values[0] != 'None':
                 print("Actual score: ", values[0])
-except KeyboardInterrupt:
-    print("connection closed...")
-    sys.exit(0)
+
+
+if __name__ == "__main__":
+    try:
+        monitorGerrit()
+    except KeyboardInterrupt:
+        print("connection closed.")
+        sys.exit(0)

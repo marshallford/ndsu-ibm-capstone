@@ -1,6 +1,3 @@
-# -*- coding: utf-8 -*-
-from __future__ import print_function
-
 import os
 import yaml
 import numpy as np
@@ -13,6 +10,7 @@ os.environ['TF_CPP_MIN_LOG_LEVEL'] = '3'
 data, labels = load_csv('changes.csv', target_column=0,
                         categorical_labels=True, n_classes=2)
 
+to_ignore = [0, 5]
 project_name_mapping_file = 'project_name_mapping.npy'
 
 
@@ -76,7 +74,6 @@ def preprocess(changes, columns_to_delete, is_live):
     return [np.array(changes, dtype=np.float32), projects]
 
 
-to_ignore = [0, 5]
 if __name__ == "__main__":
     # Preprocess data
     data, projects = preprocess(data, to_ignore, False)

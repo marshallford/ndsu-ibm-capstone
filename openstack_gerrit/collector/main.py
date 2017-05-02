@@ -1,7 +1,3 @@
-#!/usr/bin/env python
-
-from __future__ import print_function
-
 import csv
 from dateutil.parser import parse
 from functools import reduce
@@ -10,9 +6,7 @@ import logging
 import os
 from pathlib import Path
 import urllib.parse
-
 import requests
-
 
 LOG = logging.getLogger(__name__)
 
@@ -55,7 +49,7 @@ changeUrlParams = 'o=CURRENT_REVISION&o=CURRENT_COMMIT&o=CURRENT_FILES&o=DETAILE
 KB = 1024 * 1
 MB = 1024 * KB
 GB = 1024 * MB
-stopAtByteSize = 1 * MB
+stopAtSize = 1 * MB
 
 
 class GerritSession(requests.Session):
@@ -76,7 +70,7 @@ class GerritSession(requests.Session):
         """Return a list of changes from a given query from offset 'start'"""
         query = urllib.parse.quote(query)
 
-        url = "{}/changes/?q={}&{}&start={}" # NOQA
+        url = "{}/changes/?q={}&{}&start={}"
         resp = self.get(url.format(self.base_url, query, changeUrlParams, str(start))) # NOQA
         return self._strip_gerrit_weirdness(resp)
 
@@ -86,11 +80,11 @@ class GerritSession(requests.Session):
         iterate though all changes from a query.
         """
         start = 0
-        while sizeOfCSV() < stopAtByteSize:
+        while sizeOfCSV() < stopAtSize:
             changes = self.query_changes(query, start)
-            LOG.debug("Got {0} changes to process".format(len(changes)))
+            LOG.debug("got {0} changes to process".format(len(changes)))
             if not changes:
-                print("Out of changes...")
+                LOG.info("out of changes that match query.")
                 break
 
             for change in changes:
@@ -153,11 +147,12 @@ def main():
              'reviewer:"Jenkins <jenkins@openstack.org>"')
 
     gerrit = GerritSession()
-
+    print('generating csv...')
     writeChanges(gerrit.get_changes(query))
+    print('deduplicating csv...')
     deduplicateCSV()
 
 
 if __name__ == "__main__":
-    logging.basicConfig(level=logging.DEBUG)
+    logging.basicConfig(level=logging.INFO, format='%(message)s')
     main()
