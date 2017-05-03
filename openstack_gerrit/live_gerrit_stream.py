@@ -41,7 +41,7 @@ def monitorGerrit():
         test, _ = preprocess([values[1:]], to_ignore, True)
         print("### EVENT ###")
         print("Values: ", values[1:])
-        if test[0] is '-1':
+        if test[0][0] == -1:
             print("Test: not run, project name not included in model")
         else:
             pred = model.predict(test)
@@ -55,4 +55,7 @@ if __name__ == "__main__":
         monitorGerrit()
     except KeyboardInterrupt:
         print("connection closed.")
+        sys.exit(0)
+    except:
+        print("an occurred occurred, exiting.")
         sys.exit(0)
