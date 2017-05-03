@@ -1,0 +1,174 @@
+{
+  "version": 1,
+  "width": 150,
+  "height": 36,
+  "duration": 45.190932,
+  "command": null,
+  "title": null,
+  "env": {
+    "TERM": "xterm-256color",
+    "SHELL": "/bin/zsh"
+  },
+  "stdout": [
+    [
+      2.188032,
+      "\u001b[1m\u001b[7m%\u001b[27m\u001b[1m\u001b[0m                                                                                                                                                     \r \r"
+    ],
+    [
+      3.9e-05,
+      "\u001b]2;marshall@thinkpad: ~/Documents/GitHub/ndsu-ibm-capstone/openstack_gerrit\u0007"
+    ],
+    [
+      2.1e-05,
+      "\u001b]1;..nstack_gerrit\u0007"
+    ],
+    [
+      0.001327,
+      "\u001b]7;file:///home/marshall/Documents/GitHub/ndsu-ibm-capstone/openstack_gerrit\u0007"
+    ],
+    [
+      0.023471,
+      "\r\u001b[0m\u001b[27m\u001b[24m\u001b[J\u001b[01;32m➜  \u001b[36mopenstack_gerrit\u001b[00m \u001b[01;34mgit:(\u001b[31mmaster\u001b[34m)\u001b[00m \u001b[K\u001b[?1h\u001b="
+    ],
+    [
+      3.7e-05,
+      "\u001b[?2004h"
+    ],
+    [
+      0.87107,
+      "p"
+    ],
+    [
+      0.155592,
+      "\bpy"
+    ],
+    [
+      0.16007,
+      "t"
+    ],
+    [
+      0.143022,
+      "h"
+    ],
+    [
+      0.066344,
+      "o"
+    ],
+    [
+      0.145052,
+      "n"
+    ],
+    [
+      0.09553,
+      " "
+    ],
+    [
+      0.314818,
+      "l"
+    ],
+    [
+      0.178065,
+      "i"
+    ],
+    [
+      0.119642,
+      "ve_gerrit_stream.py\u001b[1m \u001b[0m"
+    ],
+    [
+      0.429042,
+      "\b\u001b[0m \b"
+    ],
+    [
+      0.000154,
+      "\u001b[?1l\u001b>"
+    ],
+    [
+      5.8e-05,
+      "\u001b[?2004l\r\r\n"
+    ],
+    [
+      0.004862,
+      "\u001b]2;python live_gerrit_stream.py\u0007\u001b]1;python\u0007"
+    ],
+    [
+      2.44429,
+      "downloading model from object storage (S3)...\r\n"
+    ],
+    [
+      1.858579,
+      "monitoring gerrit events...\r\n"
+    ],
+    [
+      1.078074,
+      "### EVENT ###\r\nValues:  ['458805', 'openstack/nova', '17', '39', '6062', '1007056']\r\n"
+    ],
+    [
+      0.023263,
+      "Test:  0.6593165397644043\r\n"
+    ],
+    [
+      0.212638,
+      "### EVENT ###\r\nValues:  ['459231', 'openstack/nova', '24', '20', '6062', '748036']\r\n"
+    ],
+    [
+      0.001689,
+      "Test:  0.6616960167884827\r\n"
+    ],
+    [
+      0.419505,
+      "### EVENT ###\r\nValues:  ['459235', 'openstack/nova', '29', '25', '6062', '747274']\r\n"
+    ],
+    [
+      0.001669,
+      "Test:  0.6614823937416077\r\n"
+    ],
+    [
+      8.044818,
+      "### EVENT ###\r\nValues:  ['461212', 'openstack/fuxi', '4', '44', '11536', '299639']\r\n"
+    ],
+    [
+      3.5e-05,
+      "Test: not run, project name not included in model\r\n"
+    ],
+    [
+      24.740584,
+      "^C"
+    ],
+    [
+      0.000304,
+      "connection closed.\r\n"
+    ],
+    [
+      0.197212,
+      "\u001b[1m\u001b[7m%\u001b[27m\u001b[1m\u001b[0m                                                                                                                                                     \r \r"
+    ],
+    [
+      4.6e-05,
+      "\u001b]2;marshall@thinkpad: ~/Documents/GitHub/ndsu-ibm-capstone/openstack_gerrit\u0007"
+    ],
+    [
+      3.3e-05,
+      "\u001b]1;..nstack_gerrit\u0007"
+    ],
+    [
+      0.001423,
+      "\u001b]7;file:///home/marshall/Documents/GitHub/ndsu-ibm-capstone/openstack_gerrit\u0007"
+    ],
+    [
+      0.013527,
+      "\r\u001b[0m\u001b[27m\u001b[24m\u001b[J\u001b[01;32m➜  \u001b[36mopenstack_gerrit\u001b[00m \u001b[01;34mgit:(\u001b[31mmaster\u001b[34m)\u001b[00m \u001b[K"
+    ],
+    [
+      6.5e-05,
+      "\u001b[?1h\u001b="
+    ],
+    [
+      3.9e-05,
+      "\u001b[?2004h"
+    ],
+    [
+      1.238742,
+      "\u001b[?2004l\r\r\n"
+    ]
+  ]
+}
